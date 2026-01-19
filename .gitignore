@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+._*
+
+# WebStorm
+*.iml
+.idea/
+node_modules/
+coverage/
+dist/
+test-report.junit.xml
+
+# PyCharm
+.venv/
+.pytest_cache/
+__pycache__/
+*.egg-info/
+.coverage

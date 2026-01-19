@@ -1,0 +1,10 @@
+# lint
+pylint==4.0.4
+rulebook-pylint==0.2
+regex
+colorama
+pandas
+# main
+# test
+pytest
+pytest-cov
