@@ -149,7 +149,7 @@ Error generating stack: `+l.message+`
                       justify-center
                       shrink-0
                       relative
-                      overflow-hidden`,children:[j.jsx("picture",{children:j.jsx("img",{src:`/images/${C.image}`,alt:C.name,className:`
+                      overflow-hidden`,children:[j.jsx("picture",{children:j.jsx("img",{src:`/psu-tier-list//images/${C.image}`,alt:C.name,className:`
                           absolute
                           inset-0
                           w-full
