@@ -1,0 +1,22 @@
+version: 2.1
+
+orbs:
+  codecov: codecov/codecov@3
+
+executors:
+  linux:
+    docker:
+      - image: cimg/node:22.15
+
+jobs:
+  upload-coverage:
+    executor: linux
+    steps:
+      - checkout
+      - run: npm install && npm test && npm run coverage
+      - codecov/upload
+
+workflows:
+  build:
+    jobs:
+      - upload-coverage
