@@ -1,15 +1,12 @@
-import {beforeEach, describe, expect, it} from 'vitest';
+import {describe, expect, it} from 'vitest';
 import '@testing-library/jest-dom';
-import {render} from '@testing-library/react';
 import {PRODUCTS} from '../src/product';
 
 describe(
   'Product',
-  () => {
-    beforeEach(() => render(<div></div>));
-
+  () =>
     it(
-      'assert that all images are used',
+      'Assert that all images are used',
       () => {
         const images = import.meta.glob('/public/images/*.{png,jpg,webp}', {eager: true});
         delete images['/public/images/favicon.ico'];
@@ -22,6 +19,5 @@ describe(
         PRODUCTS.forEach(product => usage[product.image] = true);
         Object.keys(usage).forEach(image => expect(usage[image], `${image} is unused.`).toBeTruthy());
       },
-    );
-  },
+    ),
 );

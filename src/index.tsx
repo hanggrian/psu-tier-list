@@ -27,7 +27,7 @@ const TIER_COLORS: Record<string, string> = {
   'X': 'bg-fuchsia-500',
 };
 
-function getClickableClass(darkMode: boolean) {
+function getClickableClass(darkMode: boolean): string {
   return `font-medium
   ${darkMode
     ? 'text-indigo-400 hover:text-indigo-300'
@@ -35,34 +35,35 @@ function getClickableClass(darkMode: boolean) {
   }`;
 }
 
-const PsuShowcase: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [selectedTier, setSelectedTier] = useState<string>('all');
-  const [selectedWattage, setSelectedWattage] = useState<string>('all');
+const PsuTierList: React.FC = () => {
   const [darkMode, setDarkMode] = useState<boolean>(false);
 
+  const [product, setProduct] = useState<string>('');
+  const [tier, setTier] = useState<string>('all');
+  const [wattage, setWattage] = useState<string>('all');
+
   const filteredProducts: Product[] =
-    PRODUCTS.filter(product => {
-      if (!product.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+    PRODUCTS.filter(p => {
+      if (!p.name.toLowerCase().includes(product.toLowerCase())) {
         return false;
       }
-      if (selectedTier !== 'all' && product.tier !== selectedTier) {
+      if (tier !== 'all' && !p.tier.startsWith(tier)) {
         return false;
       }
       let fromWattage;
       let toWattage;
-      if (selectedWattage === 'all') {
+      if (wattage === 'all') {
         fromWattage = 0;
         toWattage = 2000;
       } else {
-        const match = selectedWattage.match(WATTAGE_REGEX);
+        const match = wattage.match(WATTAGE_REGEX);
         if (!match) {
           return false;
         }
         fromWattage = parseInt(match[1], 10);
         toWattage = parseInt(match[2], 10);
       }
-      return product.wattage.filter(w => w >= fromWattage && w <= toWattage).length > 0;
+      return p.wattage.filter(w => w >= fromWattage && w <= toWattage).length > 0;
     });
 
   const getTierColor = (tier: string): string => {
@@ -171,8 +172,8 @@ const PsuShowcase: React.FC = () => {
                 <input
                   type='text'
                   placeholder='Type to search...'
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  value={product}
+                  onChange={e => setProduct(e.target.value)}
                   className={
                     `w-full pl-10 pr-4 py-3
                      ${darkMode
@@ -204,8 +205,8 @@ const PsuShowcase: React.FC = () => {
                     -translate-y-1/2 w-5 h-5
                     text-slate-400 pointer-events-none'/>
                 <select
-                  value={selectedTier}
-                  onChange={(e) => setSelectedTier(e.target.value)}
+                  value={tier}
+                  onChange={e => setTier(e.target.value)}
                   className={
                     `w-full pl-10 pr-4 py-3
                      ${darkMode
@@ -219,7 +220,7 @@ const PsuShowcase: React.FC = () => {
                   <option value='C'>Tier C (Low-end)</option>
                   <option value='D'>Tier D (Only for iGPU builds)</option>
                   <option value='E'>Tier E (Avoid)</option>
-                  <option value='E'>Tier F (Replace immediately)</option>
+                  <option value='F'>Tier F (Replace immediately)</option>
                 </select>
               </div>
             </div>
@@ -248,8 +249,8 @@ const PsuShowcase: React.FC = () => {
                     h-5
                     text-slate-400 pointer-events-none'/>
                 <select
-                  value={selectedWattage}
-                  onChange={(e) => setSelectedWattage(e.target.value)}
+                  value={wattage}
+                  onChange={e => setWattage(e.target.value)}
                   className={
                     `w-full pl-10 pr-4 py-3
                      ${darkMode
@@ -295,179 +296,204 @@ const PsuShowcase: React.FC = () => {
                 }>
                 {filteredProducts.length}
               </span> products found
-              {(searchTerm || selectedTier !== 'all' || selectedWattage !== 'all') && (
-                <button
-                  onClick={() => {
-                    setSearchTerm('');
-                    setSelectedTier('all');
-                    setSelectedWattage('all');
-                  }}
-                  className={`ml-4 ${getClickableClass(darkMode)}`}>
-                  Clear all filters
-                </button>
-              )}
+              {
+                (product || tier !== 'all' || wattage !== 'all') && (
+                  <button
+                    onClick={() => {
+                      setProduct('');
+                      setTier('all');
+                      setWattage('all');
+                    }}
+                    className={`ml-4 ${getClickableClass(darkMode)}`}>
+                    Clear all filters
+                  </button>
+                )
+              }
             </p>
           </div>
         </div>
 
         {/* Products Grid - 2x2 Landscape Cards */}
-        {filteredProducts.length > 0 ? (
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-            {filteredProducts.map((product, i) => (
-              <div
-                key={`${product.name}-${i}`}
-                onClick={() => console.log('Clicked product:', product.image)}
-                className={
-                  `${darkMode
-                    ? 'bg-slate-900 border-slate-700'
-                    : 'bg-white border-slate-200'
-                  }
-                  rounded-2xl
-                  shadow-lg
-                  border
-                  overflow-hidden
-                  hover:shadow-xl
-                  transition-all
-                  hover:-translate-y-1
-                  cursor-pointer`
-                }>
-                <div className='flex'>
-                  {/* Product Image Placeholder - Square on Left */}
+        {
+          filteredProducts.length > 0 ? (
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+              {
+                filteredProducts.map((p, i) => (
                   <div
-                    className='
-                      bg-linear-to-br
-                      from-slate-100
-                      to-slate-200
-                      w-48
-                      h-48
-                      flex
-                      items-center
-                      justify-center
-                      shrink-0
-                      relative
-                      overflow-hidden'>
-                    <picture>
-                      <img
-                        src={`${import.meta.env.BASE_URL}/images/${product.image}`}
-                        alt={product.name}
-                        className='
-                          absolute
-                          inset-0
-                          w-full
-                          h-full
-                          object-cover
-                          opacity-0
-                          transition-opacity
-                          duration-200'
-                        onLoad={(e) => e.currentTarget.classList.remove('opacity-0')}
-                        onError={(e) => e.currentTarget.remove()}/>
-                    </picture>
-                    <div className='text-center'>
-                      <Zap className='w-12 h-12 text-slate-400 mx-auto mb-2'/>
-                      <p className='text-xs text-slate-500 font-medium'>Product Image</p>
-                    </div>
-                  </div>
-
-                  {/* Right Side Content */}
-                  <div className='flex-1 flex flex-col p-4'>
-                    {/* Header with Tier and Price */}
-                    <div className='flex items-start justify-between mb-2'>
-                      <h3
-                        className={
-                          `text-base font-bold
-                          ${darkMode
-                            ? 'text-white group-hover:text-indigo-400'
-                            : 'text-slate-900 group-hover:text-indigo-600'
-                          } mb-3 transition-colors`
-                        }>
-                        {product.name}
-                      </h3>
-                      {product.tier && (
-                        <div
-                          className={
-                            `${getTierColor(product.tier)}
-                            text-white
-                            px-3
-                            py-1
-                            rounded-lg
-                            font-bold
-                            text-sm
-                            shadow-md`
-                          }>
-                          Tier {product.tier}
-                        </div>
-                      )}
-                      {
-                        /*
-                        <div className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                          ${product.price}
-                        </div>
-                        */
+                    key={`${p.name}-${i}`}
+                    onClick={() => console.log('Clicked product:', p.image)}
+                    className={
+                      `${darkMode
+                        ? 'bg-slate-900 border-slate-700'
+                        : 'bg-white border-slate-200'
                       }
-                    </div>
+                      rounded-2xl
+                      shadow-lg
+                      border
+                      overflow-hidden
+                      hover:shadow-xl
+                      transition-all
+                      hover:-translate-y-1
+                      cursor-pointer`
+                    }>
+                    <div className='flex'>
+                      {/* Product Image Placeholder - Square on Left */}
+                      <div
+                        className='
+                        bg-linear-to-br
+                        from-slate-100
+                        to-slate-200
+                        w-48
+                        h-48
+                        flex
+                        items-center
+                        justify-center
+                        shrink-0
+                        relative
+                        overflow-hidden'>
+                        <picture>
+                          <img
+                            src={`${import.meta.env.BASE_URL}/images/${p.image}`}
+                            alt={p.name}
+                            className='
+                            absolute
+                            inset-0
+                            w-full
+                            h-full
+                            object-cover
+                            opacity-0
+                            transition-opacity
+                            duration-200'
+                            onLoad={e => e.currentTarget.classList.remove('opacity-0')}
+                            onError={e => e.currentTarget.remove()}/>
+                        </picture>
+                        <div className='text-center'>
+                          <Zap className='w-12 h-12 text-slate-400 mx-auto mb-2'/>
+                          <p className='text-xs text-slate-500 font-medium'>Product Image</p>
+                        </div>
+                      </div>
 
-                    {/* Specifications */}
-                    <div className='space-y-2 text-sm'>
-                      {product.year && (
-                        <SpecificationRow label='Released' value={product.year} darkMode={darkMode}/>
-                      )}
-                      <SpecificationRow
-                        label='Wattage'
-                        value={product.wattage.map(w => `${w}W`).join(', ')}
-                        darkMode={darkMode}/>
-                      <SpecificationRow label='Efficiency' value={product.efficiency} darkMode={darkMode}/>
-                      <SpecificationRow label='Cable Type' value={product.modular} darkMode={darkMode}/>
+                      {/* Right Side Content */}
+                      <div className='flex-1 flex flex-col p-4'>
+                        {/* Header with Tier and Price */}
+                        <div className='flex items-start justify-between mb-2'>
+                          <h3
+                            className={
+                              `text-base font-bold
+                              ${darkMode
+                                ? 'text-white group-hover:text-indigo-400'
+                                : 'text-slate-900 group-hover:text-indigo-600'
+                              } mb-3 transition-colors`
+                            }>
+                            {p.name}
+                          </h3>
+                          {
+                            p.tier && (
+                              <div
+                                className={
+                                  `flex
+                                  items-center
+                                  whitespace-nowrap
+                                  gap-1
+                                  ml-2
+                                  ${getTierColor(p.tier)}
+                                  text-white
+                                  px-3
+                                  py-1
+                                  rounded-lg
+                                  font-bold
+                                  text-sm
+                                  shadow-md`
+                                }>
+                                <div className='on-desktop'>Tier</div>
+                                {p.tier}
+                              </div>
+                            )
+                          }
+                        </div>
+
+                        {/* Specifications */}
+                        <div className='space-y-2 text-sm'>
+                          {
+                            p.year && (
+                              <SpecificationRow
+                                label='Released:'
+                                mobile_label='Year:'
+                                value={p.year}
+                                darkMode={darkMode}/>
+                            )
+                          }
+                          <SpecificationRow
+                            label='Wattage:'
+                            mobile_label='Watt.:'
+                            value={p.wattage.map(w => `${w}W`).join(', ')}
+                            darkMode={darkMode}/>
+                          {
+                            p.efficiency && (
+                              <SpecificationRow
+                                label='Efficiency:'
+                                mobile_label='Eff.:'
+                                value={p.efficiency}
+                                darkMode={darkMode}/>
+                            )
+                          }
+                          <SpecificationRow
+                            label='Cable Type:'
+                            mobile_label='Cable:'
+                            value={p.modular}
+                            darkMode={darkMode}/>
+                        </div>
+                      </div>
                     </div>
                   </div>
+                ))
+              }
+            </div>
+          ) : (
+            <div
+              className={
+                `${darkMode
+                  ? 'bg-slate-900 border-slate-700'
+                  : 'bg-white border-slate-200'
+                } rounded-2xl shadow-lg border p-12 text-center`
+              }>
+              <div className='max-w-md mx-auto'>
+                <div
+                  className={
+                    `w-16 h-16
+                    ${darkMode
+                      ? 'bg-slate-800'
+                      : 'bg-slate-100'
+                    } rounded-full flex items-center justify-center mx-auto mb-4`
+                  }>
+                  <Search className='w-8 h-8 text-slate-400'/>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div
-            className={
-              `${darkMode
-                ? 'bg-slate-900 border-slate-700'
-                : 'bg-white border-slate-200'
-              } rounded-2xl shadow-lg border p-12 text-center`
-            }>
-            <div className='max-w-md mx-auto'>
-              <div
-                className={
-                  `w-16 h-16
-                  ${darkMode
-                    ? 'bg-slate-800'
-                    : 'bg-slate-100'
-                  } rounded-full flex items-center justify-center mx-auto mb-4`
-                }>
-                <Search className='w-8 h-8 text-slate-400'/>
-              </div>
-              <h3
-                className={
-                  `text-xl font-bold
-                  ${darkMode
-                    ? 'text-white'
-                    : 'text-slate-900'
-                  } mb-2`
-                }>
-                No products found
-              </h3>
-              <p
-                className={
-                  `${darkMode
-                    ? 'text-slate-400'
-                    : 'text-slate-600'
-                  } mb-6`
-                }>
-                Try adjusting your filters to find what you're looking for
-              </p>
-              <button
-                onClick={() => {
-                  setSearchTerm('');
-                  setSelectedTier('all');
-                  setSelectedWattage('all');
-                }}
-                className='
+                <h3
+                  className={
+                    `text-xl font-bold
+                    ${darkMode
+                      ? 'text-white'
+                      : 'text-slate-900'
+                    } mb-2`
+                  }>
+                  No products found
+                </h3>
+                <p
+                  className={
+                    `${darkMode
+                      ? 'text-slate-400'
+                      : 'text-slate-600'
+                    } mb-6`
+                  }>
+                  Try adjusting your filters to find what you're looking for.
+                </p>
+                <button
+                  onClick={() => {
+                    setProduct('');
+                    setTier('all');
+                    setWattage('all');
+                  }}
+                  className='
                   px-6
                   py-3
                   bg-indigo-600
@@ -476,20 +502,21 @@ const PsuShowcase: React.FC = () => {
                   font-semibold
                   hover:bg-indigo-700
                   transition-colors'>
-                Reset Filters
-              </button>
+                  Reset Filters
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )
+        }
       </div>
     </div>
   );
 };
 
-export default PsuShowcase;
+export default PsuTierList;
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <PsuShowcase/>
+    <PsuTierList/>
   </StrictMode>
 );

@@ -10,7 +10,7 @@ Cultists' PSU Tier List in a simple React app.
 Generate JSON file with a Python script:
 
 ```sh
-python3 generate_json.py
+python3 generate_products.py
 ```
 
 Then, build the React app:

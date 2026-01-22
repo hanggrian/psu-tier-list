@@ -1,6 +1,6 @@
 # TODO need manual fix:
-# - `bitfenix_fury`: wattage fail to split
-# - `sama_see_fsp`: residual row from Quanhan mistakenly captured
+#   - `bitfenix_fury`: wattage fail to split
+#   - `sama_see_fsp`: residual row from Quanhan mistakenly captured
 
 from json import dump
 from os.path import isfile
@@ -18,7 +18,7 @@ EFFICIENCY = {
     'W': '80+ White',
     'N': 'N/A',
 }
-OUTPUT_FILE = 'src/psu.json'
+OUTPUT_FILE = 'src/products.json'
 
 if __name__ == '__main__':
     result = []
@@ -75,7 +75,7 @@ if __name__ == '__main__':
             'modular': modular,
         })
 
-    with open(OUTPUT_FILE, 'w', encoding='utf-8') as file:
+    with open(OUTPUT_FILE, 'w', encoding='UTF-8') as file:
         dump(result, file, indent=2)
     print(f'{Fore.GREEN}Done.{Style.RESET_ALL}')
 

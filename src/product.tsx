@@ -1,4 +1,4 @@
-import psu from './psu.json';
+import psu from './products.json';
 
 interface Product {
   image: string;

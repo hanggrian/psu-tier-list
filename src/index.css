@@ -1,1 +1,19 @@
 @import "tailwindcss";
+
+.on-desktop {
+  display: block;
+}
+
+.on-mobile {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .on-desktop {
+    display: none;
+  }
+
+  .on-mobile {
+    display: block;
+  }
+}
