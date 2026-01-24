@@ -90,7 +90,16 @@ const PsuTierList: React.FC = () => {
           <div className='flex items-center gap-x-6 gap-y-3'>
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className='p-3 bg-indigo-600 rounded-xl hover:bg-indigo-700 transition-colors'>
+              className={
+                `p-3
+                ${
+                  darkMode
+                    ? 'bg-indigo-400 hover:bg-indigo-300'
+                    : 'bg-indigo-600 hover:bg-indigo-700'
+                }
+                rounded-xl
+                transition-colors`
+              }>
               {
                 darkMode
                   ? <Sun className='w-8 h-8 text-white'/>
@@ -381,8 +390,8 @@ const PsuTierList: React.FC = () => {
                             className={
                               `text-base font-bold
                               ${darkMode
-                                ? 'text-white group-hover:text-indigo-400'
-                                : 'text-slate-900 group-hover:text-indigo-600'
+                                ? 'text-white group-hover:text-indigo-300'
+                                : 'text-slate-900 group-hover:text-indigo-700'
                               } mb-3 transition-colors`
                             }>
                             {p.name}
@@ -493,15 +502,15 @@ const PsuTierList: React.FC = () => {
                     setTier('all');
                     setWattage('all');
                   }}
-                  className='
-                  px-6
-                  py-3
-                  bg-indigo-600
-                  text-white
-                  rounded-xl
-                  font-semibold
-                  hover:bg-indigo-700
-                  transition-colors'>
+                  className={
+                    `px-6
+                    py-3
+                    ${getClickableClass(darkMode)}
+                    text-white
+                    rounded-xl
+                    font-semibold
+                    transition-colors`
+                  }>
                   Reset Filters
                 </button>
               </div>
