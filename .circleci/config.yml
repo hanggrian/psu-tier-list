@@ -1,22 +1,53 @@
 version: 2.1
 
 orbs:
-  codecov: codecov/codecov@3
+  codecov: codecov/codecov@5.4.3
 
 executors:
-  linux:
+  base:
+    docker:
+      - image: cimg/base:stable
+  node:
     docker:
       - image: cimg/node:22.15
+  python-node:
+    docker:
+      - image: cimg/python:3.13-node
 
 jobs:
-  upload-coverage:
-    executor: linux
+  setup-workspace:
+    executor: base
     steps:
       - checkout
-      - run: npm install && npm test && npm run coverage
+      - persist_to_workspace:
+          root: .
+          paths: [.]
+  run-lint:
+    executor: python-node
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Check Python
+          command: pip install -r requirements.txt && pylint *.py
+      - run:
+          name: Check TypeScript
+          command: npm i && npm run lint
+  upload-coverage:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Test TypeScript
+          command: npm i && npm test && npm run coverage
       - codecov/upload
 
 workflows:
-  build:
+  code-analysis:
     jobs:
-      - upload-coverage
+      - setup-workspace
+      - run-lint:
+          requires: [setup-workspace]
+      - upload-coverage:
+          requires: [setup-workspace]

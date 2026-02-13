@@ -6,7 +6,7 @@ export default defineConfig({
   base: '/psu-tier-list/',
   plugins: [react(), tailwindcss()],
   test: {
-    include: ['./__tests__/*.tsx'],
+    include: ['src/__tests__/*.tsx'],
     environment: 'jsdom',
     globals: true,
   },

@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint src/**/*.tsx __tests__/**/*.tsx",
+    "lint": "eslint src/",
     "preview": "vite preview",
-    "test": "vitest --run __tests__",
+    "test": "vitest --run src/__tests__/",
     "coverage": "vitest run --coverage --reporter=junit --outputFile=test-report.junit.xml",
     "deploy": "gh-pages -d dist"
   },

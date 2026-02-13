@@ -11,9 +11,9 @@ insert_final_newline = true
 [*.md]
 max_line_length = 80
 
-[*.{js,jsx}]
+[*.{ts,tsx}]
 max_line_length = 100
-ij_continuation_indent_size = 4
+indent_size = 4
 ij_javascript_imports_wrap = off
 ij_typescript_imports_wrap = off
 
